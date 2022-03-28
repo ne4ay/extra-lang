@@ -1,6 +1,7 @@
 package ua.nechay.javaextras;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -12,7 +13,7 @@ public class Validation<EXCEPTION_TYPE extends Throwable, RESULT_TYPE> extends E
 
     private final Either<EXCEPTION_TYPE, RESULT_TYPE> value;
 
-    private Validation(Either<EXCEPTION_TYPE, RESULT_TYPE> either) {
+    private Validation(@Nonnull Either<EXCEPTION_TYPE, RESULT_TYPE> either) {
         this.value = either;
     }
 
@@ -78,5 +79,20 @@ public class Validation<EXCEPTION_TYPE extends Throwable, RESULT_TYPE> extends E
     @Override
     public RESULT_TYPE getRight() {
         return value.getRight();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Validation))
+            return false;
+        Validation<?, ?> that = (Validation<?, ?>) o;
+        return value.equals(that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

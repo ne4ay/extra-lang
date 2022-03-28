@@ -2,6 +2,7 @@ package ua.nechay.javaextras;
 
 import javax.annotation.Nonnull;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -61,7 +62,7 @@ public abstract class Either<LEFT_TYPE, RIGHT_TYPE> {
 
         private final LEFT_TYPE left;
 
-        private Left(@Nonnull LEFT_TYPE left) {
+        private Left(LEFT_TYPE left) {
             this.left = left;
         }
 
@@ -95,13 +96,33 @@ public abstract class Either<LEFT_TYPE, RIGHT_TYPE> {
         public <RESULT> Either<LEFT_TYPE, RESULT> mapRight(@Nonnull Function<RIGHT_TYPE, RESULT> rightFunction) {
             return Either.left(left);
         }
+
+        @Override
+        public LEFT_TYPE getLeft() {
+            return left;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (!(o instanceof Left))
+                return false;
+            Left<?, ?> left1 = (Left<?, ?>) o;
+            return Objects.equals(left, left1.left);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(left);
+        }
     }
 
     private static class Right<LEFT_TYPE, RIGHT_TYPE> extends Either<LEFT_TYPE, RIGHT_TYPE> {
 
         private final RIGHT_TYPE right;
 
-        private Right(@Nonnull RIGHT_TYPE right) {
+        private Right(RIGHT_TYPE right) {
             this.right = right;
         }
 
@@ -134,6 +155,26 @@ public abstract class Either<LEFT_TYPE, RIGHT_TYPE> {
         @Override
         public <RESULT> Either<LEFT_TYPE, RESULT> mapRight(@Nonnull Function<RIGHT_TYPE, RESULT> rightFunction) {
             return Either.right(rightFunction.apply(right));
+        }
+
+        @Override
+        public RIGHT_TYPE getRight() {
+            return right;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (!(o instanceof Right))
+                return false;
+            Right<?, ?> right1 = (Right<?, ?>) o;
+            return Objects.equals(right, right1.right);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(right);
         }
     }
 

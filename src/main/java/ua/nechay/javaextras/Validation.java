@@ -1,6 +1,8 @@
 package ua.nechay.javaextras;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,8 +29,26 @@ public class Validation<EXCEPTION_TYPE extends Throwable, RESULT_TYPE> extends E
     }
 
     public <MAYBE_EXCEPTION_TYPE extends Throwable> Validation<EXCEPTION_TYPE, RESULT_TYPE>
-    onCatch(@Nonnull Class<MAYBE_EXCEPTION_TYPE> exceptionType, @Nonnull Consumer<EXCEPTION_TYPE> consumer) {
+    onCatch(@Nonnull Consumer<EXCEPTION_TYPE> consumer, @Nonnull Class<MAYBE_EXCEPTION_TYPE> exceptionType) {
         if (value.isLeft() && (exceptionType.isInstance(value.getLeft()))) {
+            consumer.accept(value.getLeft());
+        }
+        return this;
+    }
+
+    public <MAYBE_EXCEPTION_TYPE extends Throwable> Validation<EXCEPTION_TYPE, RESULT_TYPE>
+    onCatch(@Nonnull Consumer<EXCEPTION_TYPE> consumer, @Nonnull Class<MAYBE_EXCEPTION_TYPE>... exceptionTypes) {
+        return onCatch(consumer, Arrays.asList(exceptionTypes));
+    }
+
+    public <MAYBE_EXCEPTION_TYPE extends Throwable> Validation<EXCEPTION_TYPE, RESULT_TYPE>
+    onCatch(@Nonnull Consumer<EXCEPTION_TYPE> consumer, @Nonnull Collection<Class<MAYBE_EXCEPTION_TYPE>> exceptionTypes) {
+        if (!value.isLeft()) {
+            return this;
+        }
+        boolean isRelatedToGivenTypes = exceptionTypes.stream()
+            .anyMatch(type -> type.isInstance(value.getLeft()));
+        if (isRelatedToGivenTypes) {
             consumer.accept(value.getLeft());
         }
         return this;

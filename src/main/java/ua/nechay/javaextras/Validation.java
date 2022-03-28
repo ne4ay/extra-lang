@@ -69,4 +69,14 @@ public class Validation<EXCEPTION_TYPE extends Throwable, RESULT_TYPE> extends E
     public <RESULT> Either<EXCEPTION_TYPE, RESULT> mapRight(@Nonnull Function<RESULT_TYPE, RESULT> rightFunction) {
         return value.mapRight(rightFunction);
     }
+
+    @Override
+    public EXCEPTION_TYPE getLeft() {
+        return value.getLeft();
+    }
+
+    @Override
+    public RESULT_TYPE getRight() {
+        return value.getRight();
+    }
 }

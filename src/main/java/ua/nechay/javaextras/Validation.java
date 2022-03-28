@@ -17,7 +17,7 @@ public class Validation<EXCEPTION_TYPE extends Throwable, RESULT_TYPE> extends E
     }
 
     public static <ORIGINAL_TYPE, RESULT_TYPE> Validation<Throwable, RESULT_TYPE>
-    tryOf(@Nonnull Function<ORIGINAL_TYPE, RESULT_TYPE> function, @Nonnull ORIGINAL_TYPE arg) {
+    tryOf(@Nonnull ORIGINAL_TYPE arg, @Nonnull Function<ORIGINAL_TYPE, RESULT_TYPE> function) {
         try {
             return new Validation<>(Either.right(function.apply(arg)));
         } catch (Throwable t) {

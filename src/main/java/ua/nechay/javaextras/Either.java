@@ -50,11 +50,11 @@ public abstract class Either<LEFT_TYPE, RIGHT_TYPE> {
     }
 
     public static <LEFT_TYPE, RIGHT_TYPE> Either<LEFT_TYPE, RIGHT_TYPE> left(LEFT_TYPE left) {
-        return Either.left(left);
+        return new Left<>(left);
     }
 
     public static <LEFT_TYPE, RIGHT_TYPE> Either<LEFT_TYPE, RIGHT_TYPE> right(RIGHT_TYPE right) {
-        return Either.right(right);
+        return new Right<>(right);
     }
 
     private static class Left<LEFT_TYPE, RIGHT_TYPE> extends Either<LEFT_TYPE, RIGHT_TYPE> {

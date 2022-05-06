@@ -11,16 +11,16 @@ import java.util.function.Function;
  * @author anechaev
  * @since 28.03.2022
  */
-public class Validation<EXCEPTION_TYPE extends Throwable, RESULT_TYPE> extends Either<EXCEPTION_TYPE, RESULT_TYPE> {
+public class Validation<ExceptionT extends Throwable, ResultT> extends Either<ExceptionT, ResultT> {
 
-    private final Either<EXCEPTION_TYPE, RESULT_TYPE> value;
+    private final Either<ExceptionT, ResultT> value;
 
-    private Validation(@Nonnull Either<EXCEPTION_TYPE, RESULT_TYPE> either) {
+    private Validation(@Nonnull Either<ExceptionT, ResultT> either) {
         this.value = either;
     }
 
-    public static <ORIGINAL_TYPE, RESULT_TYPE> Validation<Throwable, RESULT_TYPE>
-    tryOf(@Nonnull ORIGINAL_TYPE arg, @Nonnull Function<ORIGINAL_TYPE, RESULT_TYPE> function) {
+    public static <OriginalT, ResultT> Validation<Throwable, ResultT>
+    tryOf(@Nonnull OriginalT arg, @Nonnull Function<OriginalT, ResultT> function) {
         try {
             return new Validation<>(Either.right(function.apply(arg)));
         } catch (Throwable t) {
@@ -28,21 +28,21 @@ public class Validation<EXCEPTION_TYPE extends Throwable, RESULT_TYPE> extends E
         }
     }
 
-    public <MAYBE_EXCEPTION_TYPE extends Throwable> Validation<EXCEPTION_TYPE, RESULT_TYPE>
-    onCatch(@Nonnull Consumer<EXCEPTION_TYPE> consumer, @Nonnull Class<MAYBE_EXCEPTION_TYPE> exceptionType) {
+    public <MaybeExceptionT extends Throwable> Validation<ExceptionT, ResultT>
+    onCatch(@Nonnull Consumer<ExceptionT> consumer, @Nonnull Class<MaybeExceptionT> exceptionType) {
         if (value.isLeft() && (exceptionType.isInstance(value.getLeft()))) {
             consumer.accept(value.getLeft());
         }
         return this;
     }
 
-    public <MAYBE_EXCEPTION_TYPE extends Throwable> Validation<EXCEPTION_TYPE, RESULT_TYPE>
-    onCatch(@Nonnull Consumer<EXCEPTION_TYPE> consumer, @Nonnull Class<MAYBE_EXCEPTION_TYPE>... exceptionTypes) {
+    public <MaybeExceptionT extends Throwable> Validation<ExceptionT, ResultT>
+    onCatch(@Nonnull Consumer<ExceptionT> consumer, @Nonnull Class<MaybeExceptionT>... exceptionTypes) {
         return onCatch(consumer, Arrays.asList(exceptionTypes));
     }
 
-    public <MAYBE_EXCEPTION_TYPE extends Throwable> Validation<EXCEPTION_TYPE, RESULT_TYPE>
-    onCatch(@Nonnull Consumer<EXCEPTION_TYPE> consumer, @Nonnull Collection<Class<MAYBE_EXCEPTION_TYPE>> exceptionTypes) {
+    public <MaybeExceptionT extends Throwable> Validation<ExceptionT, ResultT>
+    onCatch(@Nonnull Consumer<ExceptionT> consumer, @Nonnull Collection<Class<MaybeExceptionT>> exceptionTypes) {
         if (!value.isLeft()) {
             return this;
         }
@@ -54,7 +54,7 @@ public class Validation<EXCEPTION_TYPE extends Throwable, RESULT_TYPE> extends E
         return this;
     }
 
-    public Validation<EXCEPTION_TYPE, RESULT_TYPE> raise() throws Throwable {
+    public Validation<ExceptionT, ResultT> raise() throws Throwable {
         if (value.isLeft()) {
             throw value.getLeft();
         }
@@ -72,32 +72,32 @@ public class Validation<EXCEPTION_TYPE extends Throwable, RESULT_TYPE> extends E
     }
 
     @Override
-    public Either<EXCEPTION_TYPE, RESULT_TYPE> onLeft(@Nonnull Consumer<EXCEPTION_TYPE> leftConsumer) {
+    public Either<ExceptionT, ResultT> onLeft(@Nonnull Consumer<ExceptionT> leftConsumer) {
         return value.onLeft(leftConsumer);
     }
 
     @Override
-    public Either<EXCEPTION_TYPE, RESULT_TYPE> onRight(@Nonnull Consumer<RESULT_TYPE> rightConsumer) {
+    public Either<ExceptionT, ResultT> onRight(@Nonnull Consumer<ResultT> rightConsumer) {
         return value.onRight(rightConsumer);
     }
 
     @Override
-    public <RESULT> Either<RESULT, RESULT_TYPE> mapLeft(@Nonnull Function<EXCEPTION_TYPE, RESULT> leftFunction) {
+    public <RESULT> Either<RESULT, ResultT> mapLeft(@Nonnull Function<ExceptionT, RESULT> leftFunction) {
         return value.mapLeft(leftFunction);
     }
 
     @Override
-    public <RESULT> Either<EXCEPTION_TYPE, RESULT> mapRight(@Nonnull Function<RESULT_TYPE, RESULT> rightFunction) {
+    public <RESULT> Either<ExceptionT, RESULT> mapRight(@Nonnull Function<ResultT, RESULT> rightFunction) {
         return value.mapRight(rightFunction);
     }
 
     @Override
-    public EXCEPTION_TYPE getLeft() {
+    public ExceptionT getLeft() {
         return value.getLeft();
     }
 
     @Override
-    public RESULT_TYPE getRight() {
+    public ResultT getRight() {
         return value.getRight();
     }
 

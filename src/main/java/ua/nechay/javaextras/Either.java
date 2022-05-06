@@ -9,22 +9,22 @@ import java.util.function.Function;
 /**
  * Represents a disjoint union, containing either something or something else.
  *
- * @param <LEFT_TYPE>  - type of the left value
- * @param <RIGHT_TYPE> - type of the right value
+ * @param <LeftT>  - type of the left value
+ * @param <RightT> - type of the right value
  * @author anechaev
  * @since 28.03.2022
  */
-public abstract class Either<LEFT_TYPE, RIGHT_TYPE> {
+public abstract class Either<LeftT, RightT> {
 
     /**
      * @return the left value or throws an exception if this is right
      * @throws NoSuchElementException if this is right value
      */
-    public LEFT_TYPE getLeft() {
+    public LeftT getLeft() {
         throw new NoSuchElementException("No left element present");
     }
 
-    public RIGHT_TYPE getRight() {
+    public RightT getRight() {
         throw new NoSuchElementException("No right element present");
     }
 
@@ -38,31 +38,31 @@ public abstract class Either<LEFT_TYPE, RIGHT_TYPE> {
      */
     public abstract boolean isRight();
 
-    public abstract Either<LEFT_TYPE, RIGHT_TYPE> onLeft(@Nonnull Consumer<LEFT_TYPE> leftConsumer);
+    public abstract Either<LeftT, RightT> onLeft(@Nonnull Consumer<LeftT> leftConsumer);
 
-    public abstract Either<LEFT_TYPE, RIGHT_TYPE> onRight(@Nonnull Consumer<RIGHT_TYPE> rightConsumer);
+    public abstract Either<LeftT, RightT> onRight(@Nonnull Consumer<RightT> rightConsumer);
 
-    public abstract <RESULT> Either<RESULT, RIGHT_TYPE> mapLeft(@Nonnull Function<LEFT_TYPE, RESULT> leftFunction);
+    public abstract <ResultT> Either<ResultT, RightT> mapLeft(@Nonnull Function<LeftT, ResultT> leftFunction);
 
-    public abstract <RESULT> Either<LEFT_TYPE, RESULT> mapRight(@Nonnull Function<RIGHT_TYPE, RESULT> rightFunction);
+    public abstract <ResultT> Either<LeftT, ResultT> mapRight(@Nonnull Function<RightT, ResultT> rightFunction);
 
-    public Either<RIGHT_TYPE, LEFT_TYPE> swap() {
+    public Either<RightT, LeftT> swap() {
         return isRight() ? Either.left(getRight()) : Either.right(getLeft());
     }
 
-    public static <LEFT_TYPE, RIGHT_TYPE> Either<LEFT_TYPE, RIGHT_TYPE> left(LEFT_TYPE left) {
+    public static <LeftT, RightT> Either<LeftT, RightT> left(LeftT left) {
         return new Left<>(left);
     }
 
-    public static <LEFT_TYPE, RIGHT_TYPE> Either<LEFT_TYPE, RIGHT_TYPE> right(RIGHT_TYPE right) {
+    public static <LeftT, RightT> Either<LeftT, RightT> right(RightT right) {
         return new Right<>(right);
     }
 
-    private static class Left<LEFT_TYPE, RIGHT_TYPE> extends Either<LEFT_TYPE, RIGHT_TYPE> {
+    private static class Left<LeftT, RightT> extends Either<LeftT, RightT> {
 
-        private final LEFT_TYPE left;
+        private final LeftT left;
 
-        private Left(LEFT_TYPE left) {
+        private Left(LeftT left) {
             this.left = left;
         }
 
@@ -77,28 +77,28 @@ public abstract class Either<LEFT_TYPE, RIGHT_TYPE> {
         }
 
         @Override
-        public Either<LEFT_TYPE, RIGHT_TYPE> onLeft(@Nonnull Consumer<LEFT_TYPE> leftConsumer) {
+        public Either<LeftT, RightT> onLeft(@Nonnull Consumer<LeftT> leftConsumer) {
             leftConsumer.accept(left);
             return this;
         }
 
         @Override
-        public Either<LEFT_TYPE, RIGHT_TYPE> onRight(@Nonnull Consumer<RIGHT_TYPE> rightConsumer) {
+        public Either<LeftT, RightT> onRight(@Nonnull Consumer<RightT> rightConsumer) {
             return this;
         }
 
         @Override
-        public <RESULT> Either<RESULT, RIGHT_TYPE> mapLeft(@Nonnull Function<LEFT_TYPE, RESULT> leftFunction) {
+        public <ResultT> Either<ResultT, RightT> mapLeft(@Nonnull Function<LeftT, ResultT> leftFunction) {
             return Either.left(leftFunction.apply(left));
         }
 
         @Override
-        public <RESULT> Either<LEFT_TYPE, RESULT> mapRight(@Nonnull Function<RIGHT_TYPE, RESULT> rightFunction) {
+        public <ResultT> Either<LeftT, ResultT> mapRight(@Nonnull Function<RightT, ResultT> rightFunction) {
             return Either.left(left);
         }
 
         @Override
-        public LEFT_TYPE getLeft() {
+        public LeftT getLeft() {
             return left;
         }
 
@@ -118,11 +118,11 @@ public abstract class Either<LEFT_TYPE, RIGHT_TYPE> {
         }
     }
 
-    private static class Right<LEFT_TYPE, RIGHT_TYPE> extends Either<LEFT_TYPE, RIGHT_TYPE> {
+    private static class Right<LeftT, RightT> extends Either<LeftT, RightT> {
 
-        private final RIGHT_TYPE right;
+        private final RightT right;
 
-        private Right(RIGHT_TYPE right) {
+        private Right(RightT right) {
             this.right = right;
         }
 
@@ -137,28 +137,28 @@ public abstract class Either<LEFT_TYPE, RIGHT_TYPE> {
         }
 
         @Override
-        public Either<LEFT_TYPE, RIGHT_TYPE> onLeft(@Nonnull Consumer<LEFT_TYPE> leftConsumer) {
+        public Either<LeftT, RightT> onLeft(@Nonnull Consumer<LeftT> leftConsumer) {
             return this;
         }
 
         @Override
-        public Either<LEFT_TYPE, RIGHT_TYPE> onRight(@Nonnull Consumer<RIGHT_TYPE> rightConsumer) {
+        public Either<LeftT, RightT> onRight(@Nonnull Consumer<RightT> rightConsumer) {
             rightConsumer.accept(right);
             return this;
         }
 
         @Override
-        public <RESULT> Either<RESULT, RIGHT_TYPE> mapLeft(@Nonnull Function<LEFT_TYPE, RESULT> leftFunction) {
+        public <ResultT> Either<ResultT, RightT> mapLeft(@Nonnull Function<LeftT, ResultT> leftFunction) {
             return Either.right(right);
         }
 
         @Override
-        public <RESULT> Either<LEFT_TYPE, RESULT> mapRight(@Nonnull Function<RIGHT_TYPE, RESULT> rightFunction) {
+        public <ResultT> Either<LeftT, ResultT> mapRight(@Nonnull Function<RightT, ResultT> rightFunction) {
             return Either.right(rightFunction.apply(right));
         }
 
         @Override
-        public RIGHT_TYPE getRight() {
+        public RightT getRight() {
             return right;
         }
 
